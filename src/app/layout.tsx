@@ -32,7 +32,7 @@ export default function RootLayout({
                                        children,
                                    }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="en" className={`${fancyFont.variable} ${readingFont.variable} ${headingFont.variable}`}>
+        <html lang="en" className={`bg-navy ${fancyFont.variable} ${readingFont.variable} ${headingFont.variable}`}>
         <body>
         <TRPCReactProvider>{children}</TRPCReactProvider>
         <Toaster/>

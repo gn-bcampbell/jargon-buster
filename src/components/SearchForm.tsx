@@ -6,7 +6,7 @@ import {z} from "zod"
 import {motion} from "framer-motion";
 
 import {Button} from "~/components/ui/button"
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "~/components/ui/form"
+import {Form, FormControl, FormField, FormItem, FormLabel} from "~/components/ui/form"
 import {Input} from "~/components/ui/input"
 import React, {useState} from "react";
 import {DefinitionCard} from "~/components/DefinitionCard";
@@ -96,8 +96,8 @@ export function SearchForm() {
             if (term.toLowerCase().includes(filterText)) {
                 viableSearchResults.push({category, term, acronym, definition});
             } else {
-                // TODO: Add in optional window pane to request / ask for definition
-                console.log('Not here')
+                // TODO: Add in optional window pane to request / ask for definition / error message
+                console.info('Not here')
             }
         })
 
@@ -132,7 +132,7 @@ export function SearchForm() {
                                                setSearchTerm(e.target.value)
                                            }}/>
                                 </FormControl>
-                                <FormMessage/>
+                                {/*<FormMessage/>*/} {/*TODO: Display error message here*/}
                             </FormItem>
                         )}/>
                     <Button type="submit" variant={"outline"} className="text-md border-navy">Submit</Button>
