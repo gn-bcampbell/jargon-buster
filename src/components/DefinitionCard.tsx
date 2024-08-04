@@ -13,25 +13,32 @@ interface props {
 export function DefinitionCard({category, term, acronym, definition}: props) {
     return (
         <>
-            {/* TODO: styling*/}
-            <Card className="max-w-5xl">
+            <Card className="m-3">
                 <CardHeader className="border-b-2 border-gray-200 p-4">
                     <CardTitle>Category</CardTitle>
                     <CardDescription>{category}</CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-2 pt-4">
+                <CardContent className="grid sm:grid-cols-2 grid-cols-1 gap-6 pt-4">
                     <div className="">
-                        <Label htmlFor={term} className="mb-10 font-semibold">Term:</Label>
+                        <Label htmlFor={term}
+                               className="mb-10 text-slate-600 font-semibold underlineOffset">Term:</Label>
                         <p>{term}</p>
                     </div>
                     <div className="">
-                        <Label htmlFor={definition} className="font-semibold">Definition:</Label>
+                        <Label htmlFor={definition}
+                               className="font-semibold  text-slate-600 underlineOffset">Definition:</Label>
                         <p>{definition}</p>
                     </div>
                 </CardContent>
                 {
                     acronym && (
-                        <CardFooter>{`Acronym: ${acronym}`}</CardFooter>
+                        <CardFooter>
+                            <div className="">
+                                <Label htmlFor={acronym}
+                                       className="font-semibold  text-slate-600 underlineOffset">Acronym:</Label>
+                                <p>{acronym}</p>
+                            </div>
+                        </CardFooter>
                     )
                 }
             </Card>

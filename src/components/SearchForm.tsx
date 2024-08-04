@@ -3,12 +3,21 @@
 import {zodResolver} from "@hookform/resolvers/zod"
 import {useForm} from "react-hook-form"
 import {z} from "zod"
+import {motion} from "framer-motion";
 
 import {Button} from "~/components/ui/button"
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "~/components/ui/form"
 import {Input} from "~/components/ui/input"
 import React, {useState} from "react";
 import {DefinitionCard} from "~/components/DefinitionCard";
+
+
+// Motion animation
+const getAnimationProps = (delay = 0) => ({
+    initial: {opacity: 0, y: -50}, // Start with opacity 0 and positioned 50px above its final position
+    animate: {opacity: 1, y: 0}, // Animate to opacity 1 and its final position
+    transition: {duration: 1, delay} // Animation duration of 1 second, with a delay based on the index
+});
 
 const FormSchema = z.object({
     filterText: z.string().min(0, {
@@ -53,6 +62,12 @@ const searchItems: SearchItem = [
         term: 'Proof of testing',
         acronym: 'test',
         definition: 'A second definition for testing purposes'
+    },
+    {
+        category: 'Tech',
+        term: 'Proof of testing some more',
+        acronym: 'test',
+        definition: 'A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.'
     },
 ]
 
@@ -105,10 +120,12 @@ export function SearchForm() {
                         name="filterText"
                         render={({field}) => (
                             <FormItem>
-                                <FormLabel>Search</FormLabel>
+                                <FormLabel
+                                    className="text-xl text-white underline underline-offset-4 decoration-redAccent">Search</FormLabel>
                                 <FormControl>
                                     <Input {...field}
                                            placeholder="Enter your search"
+                                           className="text-lightGray p-2 border-lightGray"
                                            value={searchTerm}
                                            onChange={e => {
                                                setIsMatchingTerm(false)
@@ -118,18 +135,23 @@ export function SearchForm() {
                                 <FormMessage/>
                             </FormItem>
                         )}/>
-                    <Button type="submit" variant={"outline"} className="text-black">Submit</Button>
+                    <Button type="submit" variant={"outline"} className="text-md border-navy">Submit</Button>
                 </form>
             </Form>
             {isMatchingTerm &&
                 viableSearchResults.map((result, i) => (
-                    <div key={i}>
+                    <motion.div
+                        key={i}
+                        className=" w-4/5 mx-auto"
+                        {...getAnimationProps(i * 0.4)}
+                    >
                         <DefinitionCard
                             category={result.category}
                             term={result.term}
                             acronym={result.acronym}
-                            definition={result.definition}/>
-                    </div>
+                            definition={result.definition}
+                        />
+                    </motion.div>
                 ))
             }
         </>
