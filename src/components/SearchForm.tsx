@@ -10,7 +10,7 @@ import {Form, FormControl, FormField, FormItem, FormLabel} from "~/components/ui
 import {Input} from "~/components/ui/input"
 import React, {useState} from "react";
 import {DefinitionCard} from "~/components/DefinitionCard";
-
+import {SheetData} from "~/app/helpers/excelSheets";
 
 // Motion animation
 const getAnimationProps = (delay = 0) => ({
@@ -77,6 +77,7 @@ export function SearchForm() {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [isMatchingTerm, setIsMatchingTerm] = useState(false);
+    const [excelData, setExcelData] = useState<SearchItem | null>(null);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -85,9 +86,23 @@ export function SearchForm() {
         },
     })
 
-    const searchDefinitions = (filterText: string) => {
+    async function fetchData() {
+        try {
+            const raw_data = await SheetData().then(response => response);
+            setExcelData(raw_data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
 
-        searchItems.forEach(({category, term, acronym, definition}) => {
+
+    const searchDefinitions = (filterText: string) => {
+        void fetchData();
+
+        if (!excelData)
+            return
+
+        excelData.forEach(({category, term, acronym, definition}) => {
             if (filterText === '') {
                 setIsMatchingTerm(false)
                 return;
@@ -100,7 +115,6 @@ export function SearchForm() {
                 console.info('Not here')
             }
         })
-
         setIsMatchingTerm(viableSearchResults.length > 0)
     }
 
