@@ -12,6 +12,8 @@ import React, {useState} from "react";
 import {DefinitionCard} from "~/components/DefinitionCard";
 import {SheetData} from "~/app/helpers/excelSheets";
 import {RadioGroup, RadioGroupItem} from "~/components/ui/radio-group";
+import {client} from "~/lib/utils";
+import {env} from '../env.js'
 
 // Motion animation
 const getAnimationProps = (delay = 0) => ({
@@ -77,9 +79,25 @@ const searchItems: SearchItem = [
     },
 ]
 
+// Sanity
+async function getSanityData() {
+    const query = `*[_type == 'jargon'] {
+        acronym,
+        definition,
+        term,
+        category,
+        isPublished
+    }`
+
+    const data = await client.fetch(query);
+    return data;
+}
+
+
 export function SearchForm() {
     const [isMatchingTerm, setIsMatchingTerm] = useState(false);
     const [excelData, setExcelData] = useState<SearchItem | null>(null);
+    const [sanityData, setSanityData] = useState<SearchItem | null>(null);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -91,8 +109,19 @@ export function SearchForm() {
 
     async function fetchData() {
         try {
-            const raw_data = await SheetData().then(response => response);
-            setExcelData(raw_data);
+            if (env.NEXT_PUBLIC_ENVIRONMENT === 'development') {
+                const raw_data = await SheetData().then(response => response);
+                setExcelData(raw_data);
+            } else {
+                console.log('in testing, getting sanity data')
+                try {
+                    const sanity_data = await getSanityData();
+                    setSanityData(sanity_data);
+                } catch (e) {
+                    console.warn(e)
+                }
+            }
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -114,14 +143,21 @@ export function SearchForm() {
                 viableSearchResults.push(item);
         };
 
-        if (!excelData) return;
-        excelData.forEach(({category, term, acronym, definition}) => {
+        // TODO: temp swap to use sanity or excel data
+        const dataSwap: {
+            category: string;
+            term: string;
+            acronym: string;
+            definition: string
+        }[] | null = env.NEXT_PUBLIC_ENVIRONMENT === 'development' ? excelData : sanityData
+
+        if (!dataSwap) return;
+        dataSwap.forEach(({category, term, acronym, definition}) => {
             if (filterText === '') {
                 setIsMatchingTerm(false);
                 return;
             }
 
-            //
             const item = {category, term, acronym, definition};
 
             switch (data.type) {
