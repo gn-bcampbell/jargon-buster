@@ -11,6 +11,7 @@ import {Input} from "~/components/ui/input"
 import React, {useState} from "react";
 import {DefinitionCard} from "~/components/DefinitionCard";
 import {SheetData} from "~/app/helpers/excelSheets";
+import {RadioGroup, RadioGroupItem} from "~/components/ui/radio-group";
 
 // Motion animation
 const getAnimationProps = (delay = 0) => ({
@@ -23,6 +24,9 @@ const FormSchema = z.object({
     filterText: z.string().min(0, {
         message: "Username must be at least 2 characters.",
     }),
+    type: z.enum(["term", "definition", "acronym"], {
+        required_error: "You need to select a notification type.",
+    }),
 })
 
 type SearchItem = {
@@ -31,7 +35,9 @@ type SearchItem = {
     acronym: string,
     definition: string,
 }[]
+let viableSearchResults: SearchItem = []
 
+// Dummy data
 const searchItems: SearchItem = [
     {
         category: 'Jargon',
@@ -71,19 +77,16 @@ const searchItems: SearchItem = [
     },
 ]
 
-let viableSearchResults: SearchItem = []
-
 export function SearchForm() {
-
-    const [searchTerm, setSearchTerm] = useState("");
     const [isMatchingTerm, setIsMatchingTerm] = useState(false);
     const [excelData, setExcelData] = useState<SearchItem | null>(null);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            filterText: "",
-        },
+            filterText: '',
+            type: 'term'
+        }
     })
 
     async function fetchData() {
@@ -95,69 +98,122 @@ export function SearchForm() {
         }
     }
 
-
-    const searchDefinitions = (filterText: string) => {
+    // Search Definition
+    const onSubmit = (data: z.infer<typeof FormSchema>) => {
+        // fetch excel data
         void fetchData();
 
-        if (!excelData)
-            return
+        // format incoming text
+        const filterText = data.filterText.toLowerCase();
+        // clear list to stop it being persistently added to
+        viableSearchResults = []
 
+        // TODO create type for 'item'
+        const addToResultsIfMatch = (condition: boolean, item: any) => {
+            if (condition)
+                viableSearchResults.push(item);
+        };
+
+        if (!excelData) return;
         excelData.forEach(({category, term, acronym, definition}) => {
             if (filterText === '') {
-                setIsMatchingTerm(false)
+                setIsMatchingTerm(false);
                 return;
             }
 
-            if (term.toLowerCase().includes(filterText)) {
-                viableSearchResults.push({category, term, acronym, definition});
-            } else {
-                // TODO: Add in optional window pane to request / ask for definition / error message
-                console.info('Not here')
-            }
-        })
-        setIsMatchingTerm(viableSearchResults.length > 0)
-    }
+            //
+            const item = {category, term, acronym, definition};
 
-    const onSubmit = () => {
-        // TODO: probably just remove this or combine with searchDefinitions()
-        viableSearchResults = [] //stop the list being permanently added to.
-        searchDefinitions(searchTerm.toLowerCase())
-    }
+            switch (data.type) {
+                case 'term':
+                    addToResultsIfMatch(term.toLowerCase().includes(filterText), item);
+                    break;
+                case 'acronym':
+                    addToResultsIfMatch(acronym.toLowerCase().includes(filterText), item);
+                    break;
+                case 'definition':
+                    addToResultsIfMatch(definition.toLowerCase().includes(filterText), item);
+                    break;
+                default:
+                    console.info('Not here');
+            }
+        });
+
+        setIsMatchingTerm(viableSearchResults.length > 0);
+    };
+
 
     return (
         <>
-            {/* TODO: styling*/}
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+                    {/*Search input field*/}
                     <FormField
                         control={form.control}
                         name="filterText"
                         render={({field}) => (
                             <FormItem>
                                 <FormLabel
-                                    className="text-xl text-white underline underline-offset-4 decoration-redAccent">Search</FormLabel>
+                                    className="text-xl text-white underline underline-offset-4 decoration-redAccent">
+                                    Search
+                                </FormLabel>
                                 <FormControl>
                                     <Input {...field}
                                            placeholder="Enter your search"
-                                           className="text-lightGray p-2 border-lightGray"
-                                           value={searchTerm}
-                                           onChange={e => {
-                                               setIsMatchingTerm(false)
-                                               setSearchTerm(e.target.value)
-                                           }}/>
+                                           className="text-lightGray p-2 border-lightGray"/>
                                 </FormControl>
-                                {/*<FormMessage/>*/} {/*TODO: Display error message here*/}
                             </FormItem>
-                        )}/>
+                        )}
+                    />
+                    {/*Radio buttons*/}
+                    <FormField
+                        control={form.control}
+                        name="type"
+                        render={({field}) => (
+                            <FormItem className=" text-white space-y-3">
+                                <FormControl>
+                                    <RadioGroup
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                        className="flex flex-row">
+                                        <FormItem className="flex items-center space-x-2 space-y-0 pr-2">
+                                            <FormControl>
+                                                <RadioGroupItem className="border-white" value="term"/>
+                                            </FormControl>
+                                            <FormLabel className="font-normal">
+                                                Term
+                                            </FormLabel>
+                                        </FormItem>
+                                        <FormItem className="flex items-center space-x-2 space-y-0 pr-2">
+                                            <FormControl>
+                                                <RadioGroupItem className="border-white"
+                                                                value="definition"/>
+                                            </FormControl>
+                                            <FormLabel className="font-normal">
+                                                Definition
+                                            </FormLabel>
+                                        </FormItem>
+                                        <FormItem className="flex items-center space-x-2 space-y-0">
+                                            <FormControl>
+                                                <RadioGroupItem className="border-white" value="acronym"/>
+                                            </FormControl>
+                                            <FormLabel className="font-normal">Acronym</FormLabel>
+                                        </FormItem>
+                                    </RadioGroup>
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
                     <Button type="submit" variant={"outline"} className="text-md border-navy">Submit</Button>
                 </form>
             </Form>
+            {/*Display definition card*/}
             {isMatchingTerm &&
-                viableSearchResults.map((result, i) => (
+                viableSearchResults.map((result, index) => (
                     <motion.div
-                        key={i}
+                        key={index}
                         className=" w-4/5 mx-auto"
-                        {...getAnimationProps(i * 0.4)}
+                        {...getAnimationProps(index * 0.4)}
                     >
                         <DefinitionCard
                             category={result.category}
