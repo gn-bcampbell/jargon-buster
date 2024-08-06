@@ -14,7 +14,7 @@ export function DefinitionCard({category, term, acronym, definition}: props) {
     return (
         <>
             <Card className="m-3">
-                <CardHeader className="border-b-2 border-gray-200 p-4">
+                <CardHeader className="border-b-2 border-redAccent p-4">
                     <CardTitle>Category</CardTitle>
                     <CardDescription>{category}</CardDescription>
                 </CardHeader>
