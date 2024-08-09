@@ -7,7 +7,7 @@ export default defineConfig({
     name: 'default',
     title: 'jargon-buster',
 
-    projectId: 'uerd2g5j',
+    projectId: 'test',
     dataset: 'production',
 
     plugins: [structureTool(), visionTool()],

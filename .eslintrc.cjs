@@ -21,11 +21,6 @@ const config = {
         "@typescript-eslint/no-unsafe-argument": "warn",
         "@typescript-eslint/no-unsafe-assignment": "warn",
         "@typescript-eslint/no-unsafe-return": "warn",
-        "@typescript-eslint/no-unsafe-call": "warn",
-        "@typescript-eslint/no-unsafe-member-access": 'warn',
-        "@typescript-eslint/prefer-for-of": "off",
-        "@typescript-eslint/ban-ts-comment": "off",
-        "@typescript-eslint/no-floating-promises": "off",
         "@typescript-eslint/consistent-type-imports": [
             "warn",
             {
@@ -42,7 +37,6 @@ const config = {
             },
         ],
     },
-    ignorePatterns: ["./src/components/ui/"]
 };
 
 module.exports = config;
