@@ -1,6 +1,4 @@
-import {defineType} from 'sanity'
-
-export const jargonType = defineType({
+export const Jargon = {
     name: 'jargon',
     title: 'Jargon',
     type: 'document',
@@ -27,4 +25,4 @@ export const jargonType = defineType({
             type: 'string',
         },
     ],
-})
+}

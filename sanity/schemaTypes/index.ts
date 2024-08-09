@@ -1,3 +1,3 @@
-import {jargonType} from '../schemas/jargon'
+import {Jargon} from "./Jargon";
 
-export const schemaTypes = [jargonType]
+export const schemaTypes = [Jargon]
