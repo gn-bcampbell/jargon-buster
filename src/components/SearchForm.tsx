@@ -17,7 +17,7 @@ import {RadioGroup, RadioGroupItem} from "~/components/ui/radio-group";
 // local imports
 import {DefinitionCard} from "~/components/DefinitionCard";
 import {SearchItem} from "~/lib/types";
-import {getSanityData} from "~/lib/sanity/sanityUtil";
+import {getSanityData} from "../lib/sanity/sanityUtil";
 import {getExcelData} from "~/lib/excelSheets/excelSheets";
 
 let viableSearchResults: SearchItem[] = []
