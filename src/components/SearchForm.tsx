@@ -17,8 +17,8 @@ import {RadioGroup, RadioGroupItem} from "~/components/ui/radio-group";
 // local imports
 import {DefinitionCard} from "~/components/DefinitionCard";
 import {SearchItem} from "~/lib/types";
-import {getSanityData} from "../lib/sanity/sanityUtil";
 import {getExcelData} from "~/lib/excelSheets/excelSheets";
+import {getSanityData} from "~/lib/sanity/sanityUtil";
 
 let viableSearchResults: SearchItem[] = []
 export const revalidate = 30;
