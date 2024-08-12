@@ -7,8 +7,8 @@ export default defineConfig({
     name: 'default',
     title: 'jargon-buster',
 
-    projectId: 'test',
-    dataset: 'production',
+    projectId: process.env.SANITY_PROJECT_ID!,
+    dataset: process.env.SANITY_STUDIO_ENVIRONMENT!,
 
     plugins: [structureTool(), visionTool()],
 

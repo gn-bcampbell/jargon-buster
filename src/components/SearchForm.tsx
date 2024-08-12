@@ -1,104 +1,47 @@
 "use client"
 
+// setup
+import React, {useState} from "react";
 import {zodResolver} from "@hookform/resolvers/zod"
 import {useForm} from "react-hook-form"
 import {z} from "zod"
 import {motion} from "framer-motion";
+import {env} from '~/env.js'
 
+// ui
 import {Button} from "~/components/ui/button"
-import {Form, FormControl, FormField, FormItem, FormLabel} from "~/components/ui/form"
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "~/components/ui/form"
 import {Input} from "~/components/ui/input"
-import React, {useState} from "react";
-import {DefinitionCard} from "~/components/DefinitionCard";
-import {SheetData} from "~/app/helpers/excelSheets";
 import {RadioGroup, RadioGroupItem} from "~/components/ui/radio-group";
-import {client} from "~/lib/utils";
-import {env} from '../env.js'
 
-// Motion animation
+// local imports
+import {DefinitionCard} from "~/components/DefinitionCard";
+import {SearchItem} from "~/lib/types";
+import {getSanityData} from "~/lib/sanity/sanityUtil";
+import {getExcelData} from "~/lib/excelSheets/excelSheets";
+
+let viableSearchResults: SearchItem[] = []
+export const revalidate = 30;
+
+// framer motion animation
 const getAnimationProps = (delay = 0) => ({
     initial: {opacity: 0, y: -50}, // Start with opacity 0 and positioned 50px above its final position
     animate: {opacity: 1, y: 0}, // Animate to opacity 1 and its final position
-    transition: {duration: 1, delay} // Animation duration of 1 second, with a delay based on the index
+    transition: {duration: 1, delay} // Animation duration of 1 second, with a delay
 });
 
 const FormSchema = z.object({
-    filterText: z.string().min(0, {
-        message: "Username must be at least 2 characters.",
+    filterText: z.string().min(1, {
+        message: "Search must be at least 1 character.",
     }),
     type: z.enum(["term", "definition", "acronym"], {
         required_error: "You need to select a notification type.",
     }),
 })
 
-type SearchItem = {
-    category: string,
-    term: string,
-    acronym: string,
-    definition: string,
-}[]
-let viableSearchResults: SearchItem = []
-
-// Dummy data
-const searchItems: SearchItem = [
-    {
-        category: 'Jargon',
-        term: 'Actual Billing Rate',
-        acronym: 'ABR',
-        definition: 'The hourly rate to be billed to the customer. Should aim to be greater than or equal to the IBR (Internal Billing Rate). '
-    },
-    {
-        category: 'Jargon',
-        term: 'Test Rate',
-        acronym: 'TEST',
-        definition: 'This is a test and should be ignored. '
-    },
-    {
-        category: 'Jargon',
-        term: 'Assignment Manager',
-        acronym: 'AM',
-        definition: 'Primary point of contact for a specific project or assignment.'
-    },
-    {
-        category: 'Tech',
-        term: 'Proof of Concept',
-        acronym: 'PoC',
-        definition: 'A demonstration of a design, concept, or proposal for how a system or idea may operate.'
-    },
-    {
-        category: 'Tech',
-        term: 'Proof of testing',
-        acronym: 'test',
-        definition: 'A second definition for testing purposes'
-    },
-    {
-        category: 'Tech',
-        term: 'Proof of testing some more',
-        acronym: 'test',
-        definition: 'A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.A third definition for testing purposes, but this is longer.'
-    },
-]
-
-// Sanity
-async function getSanityData() {
-    const query = `*[_type == 'jargon'] {
-        acronym,
-        definition,
-        term,
-        category,
-        isPublished
-    }`
-
-    const data = await client.fetch(query);
-    return data;
-}
-
-
 export function SearchForm() {
     const [isMatchingTerm, setIsMatchingTerm] = useState(false);
-    const [excelData, setExcelData] = useState<SearchItem | null>(null);
-    const [sanityData, setSanityData] = useState<SearchItem | null>(null);
-
+    const [sourceData, setSourceData] = useState<SearchItem[] | null>(null);
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -109,71 +52,56 @@ export function SearchForm() {
 
     async function fetchData() {
         try {
-            if (env.NEXT_PUBLIC_ENVIRONMENT === 'development') {
-                const raw_data = await SheetData().then(response => response);
-                setExcelData(raw_data);
-            } else {
-                console.log('in testing, getting sanity data')
-                try {
-                    const sanity_data = await getSanityData();
-                    setSanityData(sanity_data);
-                } catch (e) {
-                    console.warn(e)
-                }
-            }
-
+            return env.NEXT_PUBLIC_ENVIRONMENT === 'development'
+                ? setSourceData(await getExcelData())
+                : setSourceData(await getSanityData())
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
 
-    // Search Definition
+    void fetchData(); //call immediately
+
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
-        // fetch excel data
-        void fetchData();
 
-        // format incoming text
         const filterText = data.filterText.toLowerCase();
-        // clear list to stop it being persistently added to
-        viableSearchResults = []
+        viableSearchResults = [] // clear list to stop it being persistently added to
 
-        // TODO create type for 'item'
-        const addToResultsIfMatch = (condition: boolean, item: any) => {
-            if (condition)
-                viableSearchResults.push(item);
+
+        if (!sourceData) {
+            form.setError("filterText", {
+                message: 'Error returning data source',
+            })
+            return;
+        }
+
+        const addToViableResults = (condition: boolean, item: SearchItem) => {
+            if (condition) viableSearchResults.push(item);
         };
 
-        // TODO: temp swap to use sanity or excel data
-        const dataSwap: {
-            category: string;
-            term: string;
-            acronym: string;
-            definition: string
-        }[] | null = env.NEXT_PUBLIC_ENVIRONMENT === 'development' ? excelData : sanityData
-
-        if (!dataSwap) return;
-        dataSwap.forEach(({category, term, acronym, definition}) => {
-            if (filterText === '') {
-                setIsMatchingTerm(false);
-                return;
-            }
-
-            const item = {category, term, acronym, definition};
-
+        sourceData.forEach(({category, term, acronym, definition}) => {
+            const item: SearchItem = {category, term, acronym, definition};
             switch (data.type) {
                 case 'term':
-                    addToResultsIfMatch(term.toLowerCase().includes(filterText), item);
+                    addToViableResults(term.toLowerCase().includes(filterText), item);
                     break;
                 case 'acronym':
-                    addToResultsIfMatch(acronym.toLowerCase().includes(filterText), item);
+                    addToViableResults(acronym.toLowerCase().includes(filterText), item);
                     break;
                 case 'definition':
-                    addToResultsIfMatch(definition.toLowerCase().includes(filterText), item);
+                    addToViableResults(definition.toLowerCase().includes(filterText), item);
                     break;
                 default:
                     console.info('Not here');
             }
         });
+
+        if (!viableSearchResults.length) {
+            form.setError("filterText", {
+                message: 'No matching term.',
+            })
+            return;
+        }
 
         setIsMatchingTerm(viableSearchResults.length > 0);
     };
@@ -198,6 +126,7 @@ export function SearchForm() {
                                            placeholder="Enter your search"
                                            className="text-lightGray p-2 border-lightGray"/>
                                 </FormControl>
+                                <FormMessage/>
                             </FormItem>
                         )}
                     />
@@ -206,12 +135,12 @@ export function SearchForm() {
                         control={form.control}
                         name="type"
                         render={({field}) => (
-                            <FormItem className=" text-white space-y-3">
+                            <FormItem className="text-white space-y-3">
                                 <FormControl>
                                     <RadioGroup
                                         onValueChange={field.onChange}
                                         defaultValue={field.value}
-                                        className="flex flex-row">
+                                        className="flex flex-row flex-wrap">
                                         <FormItem className="flex items-center space-x-2 space-y-0 pr-2">
                                             <FormControl>
                                                 <RadioGroupItem className="border-white" value="term"/>
