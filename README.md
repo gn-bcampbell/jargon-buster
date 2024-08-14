@@ -1,30 +1,42 @@
-# Create T3 App
+# Jargon Buster
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## Purpose
 
-## What's next? How do I make an app with this?
+This is a simple search app that allows new and existing employees to quickly search for terms, definitions, and
+acronyms for commonly used phrases within PA Consulting.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+The idea is to have a quick and accessible means for people to search for concepts without having to ask that dreaded '
+silly question' in a meeting.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## How It's Built
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **Tools**
+    - React
+    - TypeScript
+    - NextJS
+    - Zod
+    - ShadCN UI
+    - Tailwind CSS
+    - Vercel
+- **Data Sources**
+    - Sanity CMS
+    - Excel Spreadsheet
 
-## Learn More
+### How It's Configured
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- Inside `env.example` you can swap the Data Source being pulled into the app.
+- Swap the values for `NEXT_PUBLIC_ENVIRONMENT` depending on what data source you want to use.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### How To Use It
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+**Inside jargon-buster directory**
 
-## How do I deploy this?
+- Run `npm run dev`
+- Build `npm run build`
+- Lint `npm run lint`
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
-# jargon-buster
+**Inside `jargon-buster\sanity` directory**
+
+- Run `npm run dev`
+- Build `npm run build`
+- Deploy `npm run deploy`

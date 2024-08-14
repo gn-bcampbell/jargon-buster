@@ -16,7 +16,7 @@ import {RadioGroup, RadioGroupItem} from "~/components/ui/radio-group";
 
 // local imports
 import {DefinitionCard} from "~/components/DefinitionCard";
-import {SearchItem} from "~/lib/types";
+import type {SearchItem} from "~/lib/types";
 import {getExcelData} from "~/lib/dataSource/excelSheets";
 import {getSanityData} from "~/lib/dataSource/sanityUtil";
 
