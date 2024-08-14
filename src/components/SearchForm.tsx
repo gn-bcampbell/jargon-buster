@@ -31,8 +31,8 @@ const getAnimationProps = (delay = 0) => ({
 });
 
 const FormSchema = z.object({
-    filterText: z.string().min(0, {
-        message: "",
+    filterText: z.string().min(1, {
+        message: "Search must be at least 1 character.",
     }),
     type: z.enum(["term", "definition", "acronym"], {
         required_error: "You need to select a notification type.",
