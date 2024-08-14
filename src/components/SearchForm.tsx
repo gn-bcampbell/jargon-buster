@@ -31,8 +31,8 @@ const getAnimationProps = (delay = 0) => ({
 });
 
 const FormSchema = z.object({
-    filterText: z.string().min(1, {
-        message: "Search must be at least 1 character.",
+    filterText: z.string().min(0, {
+        message: "",
     }),
     type: z.enum(["term", "definition", "acronym"], {
         required_error: "You need to select a notification type.",
@@ -50,6 +50,7 @@ export function SearchForm() {
         }
     })
 
+    // TODO: A sanity request is made on each search... move this elsewhere, or implement caching??
     async function fetchData() {
         try {
             return env.NEXT_PUBLIC_ENVIRONMENT === 'development'
@@ -66,7 +67,6 @@ export function SearchForm() {
 
         const filterText = data.filterText.toLowerCase();
         viableSearchResults = [] // clear list to stop it being persistently added to
-
 
         if (!sourceData) {
             form.setError("filterText", {
