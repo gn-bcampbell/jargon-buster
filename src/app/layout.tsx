@@ -1,5 +1,5 @@
 import "~/styles/globals.css";
-
+import {Analytics} from "@vercel/analytics/react"
 import {type Metadata} from "next";
 import {Toaster} from "~/components/ui/sonner"
 
@@ -35,6 +35,7 @@ export default function RootLayout({
         <html lang="en" className={`bg-navy ${fancyFont.variable} ${readingFont.variable} ${headingFont.variable}`}>
         <body>
         <TRPCReactProvider>{children}</TRPCReactProvider>
+        <Analytics/>
         <Toaster/>
         </body>
         </html>
