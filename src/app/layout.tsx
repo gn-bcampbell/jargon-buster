@@ -1,10 +1,10 @@
 import "~/styles/globals.css";
-import {Analytics} from "@vercel/analytics/react"
-import {type Metadata} from "next";
-import {Toaster} from "~/components/ui/sonner"
+import { Analytics } from "@vercel/analytics/react"
+import { type Metadata } from "next";
+import { Toaster } from "~/components/ui/sonner"
 
-import {TRPCReactProvider} from "~/trpc/react";
-import {Akaya_Kanadaka, Poppins, Roboto} from "next/font/google";
+import { TRPCReactProvider } from "~/trpc/react";
+import { Akaya_Kanadaka, Poppins, Roboto } from "next/font/google";
 
 const fancyFont = Akaya_Kanadaka({
     weight: "400",
@@ -25,19 +25,19 @@ const readingFont = Roboto({
 export const metadata: Metadata = {
     title: "Jargon Buster",
     description: "",
-    icons: [{rel: "icon", url: "/favicon.ico"}],
+    icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 export default function RootLayout({
-                                       children,
-                                   }: Readonly<{ children: React.ReactNode }>) {
+    children,
+}: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" className={`bg-navy ${fancyFont.variable} ${readingFont.variable} ${headingFont.variable}`}>
-        <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
-        <Analytics/>
-        <Toaster/>
-        </body>
+            <body>
+                <TRPCReactProvider>{children}</TRPCReactProvider>
+                <Analytics />
+                <Toaster />
+            </body>
         </html>
     );
 }

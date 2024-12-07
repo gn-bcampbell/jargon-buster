@@ -1,37 +1,37 @@
 "use client"
 
 // setup
-import React, {useState} from "react";
-import {zodResolver} from "@hookform/resolvers/zod"
-import {useForm} from "react-hook-form"
-import {z} from "zod"
-import {motion} from "framer-motion";
-import {env} from '~/env.js'
+import React, { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { motion } from "framer-motion";
+import { env } from '~/env.js'
 
 // ui
-import {Button} from "~/components/ui/button"
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "~/components/ui/form"
-import {Input} from "~/components/ui/input"
-import {RadioGroup, RadioGroupItem} from "~/components/ui/radio-group";
+import { Button } from "~/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form"
+import { Input } from "~/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 
 // local imports
-import {DefinitionCard} from "~/components/DefinitionCard";
-import type {SearchItem} from "~/lib/types";
-import {getExcelData} from "~/lib/dataSource/excelSheets";
-import {getSanityData} from "~/lib/dataSource/sanityUtil";
+import { DefinitionCard } from "~/components/DefinitionCard";
+import type { SearchItem } from "~/lib/types";
+import { getExcelData } from "~/lib/dataSource/excelSheets";
+import { getSanityData } from "~/lib/dataSource/sanityUtil";
 
 let viableSearchResults: SearchItem[] = []
 export const revalidate = 30;
 
 // framer motion animation
 const getAnimationProps = (delay = 0) => ({
-    initial: {opacity: 0, y: -50}, // Start with opacity 0 and positioned 50px above its final position
-    animate: {opacity: 1, y: 0}, // Animate to opacity 1 and its final position
-    transition: {duration: 1, delay} // Animation duration of 1 second, with a delay
+    initial: { opacity: 0, y: -50 }, // Start with opacity 0 and positioned 50px above its final position
+    animate: { opacity: 1, y: 0 }, // Animate to opacity 1 and its final position
+    transition: { duration: 1, delay } // Animation duration of 1 second, with a delay
 });
 
 const FormSchema = z.object({
-    filterText: z.string().min(1, {
+    filterText: z.string().min(0, {
         message: "Search must be at least 1 character.",
     }),
     type: z.enum(["term", "definition", "acronym"], {
@@ -79,8 +79,8 @@ export function SearchForm() {
             if (condition) viableSearchResults.push(item);
         };
 
-        sourceData.forEach(({category, term, acronym, definition}) => {
-            const item: SearchItem = {category, term, acronym, definition};
+        sourceData.forEach(({ category, term, acronym, definition }) => {
+            const item: SearchItem = { category, term, acronym, definition };
             switch (data.type) {
                 case 'term':
                     addToViableResults(term.toLowerCase().includes(filterText), item);
@@ -115,7 +115,7 @@ export function SearchForm() {
                     <FormField
                         control={form.control}
                         name="filterText"
-                        render={({field}) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel
                                     className="text-xl text-white underline underline-offset-4 decoration-redAccent">
@@ -123,10 +123,10 @@ export function SearchForm() {
                                 </FormLabel>
                                 <FormControl>
                                     <Input {...field}
-                                           placeholder="Enter your search"
-                                           className="text-lightGray p-2 border-lightGray"/>
+                                        placeholder="Search: eg. 'Circle Back' or leave empty to see everything."
+                                        className="text-lightGray p-2 border-lightGray" />
                                 </FormControl>
-                                <FormMessage/>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
@@ -134,7 +134,7 @@ export function SearchForm() {
                     <FormField
                         control={form.control}
                         name="type"
-                        render={({field}) => (
+                        render={({ field }) => (
                             <FormItem className="text-white space-y-3">
                                 <FormControl>
                                     <RadioGroup
@@ -143,7 +143,7 @@ export function SearchForm() {
                                         className="flex flex-row flex-wrap">
                                         <FormItem className="flex items-center space-x-2 space-y-0 pr-2">
                                             <FormControl>
-                                                <RadioGroupItem className="border-white" value="term"/>
+                                                <RadioGroupItem className="border-white" value="term" />
                                             </FormControl>
                                             <FormLabel className="font-normal">
                                                 Term
@@ -152,7 +152,7 @@ export function SearchForm() {
                                         <FormItem className="flex items-center space-x-2 space-y-0 pr-2">
                                             <FormControl>
                                                 <RadioGroupItem className="border-white"
-                                                                value="definition"/>
+                                                    value="definition" />
                                             </FormControl>
                                             <FormLabel className="font-normal">
                                                 Definition
@@ -160,7 +160,7 @@ export function SearchForm() {
                                         </FormItem>
                                         <FormItem className="flex items-center space-x-2 space-y-0">
                                             <FormControl>
-                                                <RadioGroupItem className="border-white" value="acronym"/>
+                                                <RadioGroupItem className="border-white" value="acronym" />
                                             </FormControl>
                                             <FormLabel className="font-normal">Acronym</FormLabel>
                                         </FormItem>

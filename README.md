@@ -3,7 +3,7 @@
 ## Purpose
 
 This is a simple search app that allows new and existing employees to quickly search for terms, definitions, and
-acronyms for commonly used phrases within PA Consulting.
+acronyms for commonly used phrases within Consulting or Corporate workplaces.
 
 The idea is to have a quick and accessible means for people to search for concepts without having to ask that dreaded '
 silly question' in a meeting.
@@ -11,16 +11,16 @@ silly question' in a meeting.
 ## How It's Built
 
 - **Tools**
-    - React
-    - TypeScript
-    - NextJS
-    - Zod
-    - ShadCN UI
-    - Tailwind CSS
-    - Vercel
+  - React
+  - TypeScript
+  - NextJS
+  - Zod
+  - ShadCN UI
+  - Tailwind CSS
+  - Vercel
 - **Data Sources**
-    - Sanity CMS
-    - Excel Spreadsheet
+  - Sanity CMS
+  - Excel Spreadsheet
 
 ### How It's Configured
 
