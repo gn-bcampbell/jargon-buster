@@ -5,8 +5,7 @@
 This is a simple search app that allows new and existing employees to quickly search for terms, definitions, and
 acronyms for commonly used phrases within Consulting or Corporate workplaces.
 
-The idea is to have a quick and accessible means for people to search for concepts without having to ask that dreaded '
-silly question' in a meeting.
+The idea is to have a quick and accessible means for people to search for concepts without having to ask that dreaded 'silly question' in a meeting.
 
 ## How It's Built
 
